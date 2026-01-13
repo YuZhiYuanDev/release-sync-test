@@ -1,0 +1,63 @@
+name: Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      giteeRepo:
+        description: 'Gitee 目标仓库（格式：用户名/仓库名）'
+        required: true
+        default: 'ffishh/release-sync'
+      releaseType:
+        description: '测试的 Release 类型（published/draft/prerelease）'
+        required: true
+        default: 'published'
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'package*.json'
+      - '.github/workflows/**'
+  release:
+    types: [created, published, edited, prereleased]
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: 安装依赖
+        run: |
+          npm ci
+          npm ls
+
+      - name: 构建 Action 产物（ncc 打包）
+        run: |
+          npm run build
+          if [ ! -d "dist" ]; then echo "打包产物 dist 目录不存在" && exit 1; fi
+          ls -la dist/
+
+      - name: 执行 Release 同步到 Gitee
+        id: run-release-sync
+        uses: ./
+        with:
+          platforms: github,gitee
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          gitee-token: ${{ secrets.GITEE_TOKEN }}
+          gitee-owner: ffishh
+          gitee-repo: release-sync
+          tag: test-v${{ github.run_id }}
+          asset-files: |
+            README.md
+            src/*.js
