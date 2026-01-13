@@ -1,0 +1,41 @@
+{
+  "name": "release-sync",
+  "version": "1.0.0",
+  "description": "A lightweight and reliable GitHub Action to synchronize release assets between GitHub Release and Gitee Release.",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "ncc build src/index.js -o dist",
+    "precommit": "npm run build",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YuZhiYuanOrg/release-sync.git"
+  },
+  "keywords": [
+    "github-action",
+    "gitee",
+    "release",
+    "sync",
+    "synchronize",
+    "assets"
+  ],
+  "author": "YuZhiYuanOrg <YuZhiYuanDev@outlook.com>",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/YuZhiYuanOrg/release-sync/issues"
+  },
+  "homepage": "https://github.com/YuZhiYuanOrg/release-sync#readme",
+  "dependencies": {
+    "@actions/core": "^2.0.2",
+    "@actions/github": "^7.0.0",
+    "axios": "^1.13.2",
+    "fs-extra": "^11.3.3",
+    "glob": "^13.0.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.4",
+    "husky": "^9.1.7"
+  }
+}
