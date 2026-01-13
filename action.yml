@@ -1,0 +1,56 @@
+name: 'Release Sync'
+description: 'A lightweight and reliable GitHub Action to synchronize release assets between GitHub Release and Gitee Release.'
+author: 'YuZhiYuanOrg'
+branding:
+  icon: 'upload-cloud'
+  color: 'blue'
+
+inputs:
+  platforms:
+    description: 'Target platforms to synchronize releases to, separated by commas.'
+    required: true
+    default: 'github,gitee'
+  tag:
+    description: 'Unique tag name for the release.'
+    required: true
+    default: ${{ github.ref_name }}
+  release-name:
+    description: 'Human-readable display name for the release.'
+    required: true
+    default: ${{ github.ref_name }}
+  release-body:
+    description: 'Detailed release notes content, supporting Markdown format.'
+    required: false
+    default: 'Auto release by Release Sync'
+  draft:
+    description: 'Boolean flag to mark the release as a draft.'
+    required: false
+    default: 'false'
+  prerelease:
+    description: 'Boolean flag to mark the release as a pre-release.'
+    required: false
+    default: 'false'
+  github-token:
+    description: 'GitHub access token for authentication.'
+    required: false
+    default: ${{ github.token }}
+  gitee-token:
+    description: 'Gitee personal access token with "repo" permission.'
+    required: false
+  gitee-owner:
+    description: 'Owner identifier of the target Gitee repository.'
+    required: false
+  gitee-repo:
+    description: 'Name of the target Gitee repository.'
+    required: false
+  gitee-target-commitish:
+    description: 'Target branch or commit SHA that the Gitee release points to.'
+    required: false
+    default: 'master'
+  asset-files:
+    description: 'File path(s) or wildcard patterns for assets to upload with the release, supporting multiple paths separated by spaces.'
+    required: false
+
+runs:
+  using: 'node24'
+  main: 'dist/index.js'
