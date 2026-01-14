@@ -32,7 +32,8 @@
     "@actions/github": "^7.0.0",
     "axios": "^1.13.2",
     "fs-extra": "^11.3.3",
-    "glob": "^13.0.0"
+    "glob": "^13.0.0",
+    "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.4",
