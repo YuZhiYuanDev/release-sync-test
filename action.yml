@@ -48,7 +48,7 @@ inputs:
     required: false
     default: 'master'
   asset-files:
-    description: 'File path(s) or wildcard patterns for assets to upload with the release, supporting multiple paths separated by spaces.'
+    description: 'File path(s) or wildcard patterns for assets to upload with the release.'
     required: false
 
 runs:

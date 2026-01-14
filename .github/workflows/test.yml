@@ -59,4 +59,5 @@ jobs:
           gitee-repo: release-sync
           tag: test-v${{ github.run_id }}
           asset-files: |
-            README.md,src/*.js
+            README.md
+            src/*.js
