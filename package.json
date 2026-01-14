@@ -31,9 +31,9 @@
     "@actions/core": "^2.0.2",
     "@actions/github": "^7.0.0",
     "axios": "^1.13.2",
-    "crypto-js": "^4.2.0",
     "fs-extra": "^11.3.3",
-    "glob": "^13.0.0"
+    "glob": "^13.0.0",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.4",
