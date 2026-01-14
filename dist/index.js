@@ -50936,7 +50936,7 @@ function resolveAssetFiles(assetInput) {
     core.info(`Starting to resolve asset files from raw input: "${assetInput}"`);
 
     const assetPatterns = assetInput
-        .split(',')
+        .split(/\s+/)
         .map(item => item.trim())
         .filter(Boolean);
 
