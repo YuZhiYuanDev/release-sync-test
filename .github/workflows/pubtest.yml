@@ -1,0 +1,35 @@
+name: Test for publication
+
+on:
+  workflow_dispatch:
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: 执行 Release 同步到 Gitee
+        id: run-release-sync
+        uses: ./
+        with:
+          platforms: github,gitee
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          gitee-token: ${{ secrets.GITEE_TOKEN }}
+          gitee-owner: ffishh
+          gitee-repo: release-sync
+          tag: test-v${{ github.run_id }}
+          asset-files: |
+            README.md
+            src/*.js
